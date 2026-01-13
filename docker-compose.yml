@@ -1,31 +1,3 @@
-version: "3.8"
-
-services:
-  mongo:
-    image: mongo:4.4
-    restart: unless-stopped
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin123
-    volumes:
-      - mongo_data:/data/db
-
-  mongo-express:
-    image: mongo-express
-    restart: unless-stopped
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: admin123
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-    depends_on:
-      - mongo
-
   udt-api:
     build:
       context: ./udt-api
@@ -33,11 +5,11 @@ services:
     ports:
       - "8080:8080"
     environment:
+      - PORT=8080
       - MONGO_URI=mongodb://admin:admin123@mongo:27017/?authSource=admin
-      - DB_NAME=udt_manager
       - API_KEY=change_me_please
+
+      # ✅ datasets you allow the API to use
+      - ALLOWED_DBS=udt_dc_dev,udt_dc_prod,udt_tagio_dev,udt_tagio_prod,tag_dc_dev,tag_dc_prod,tag_tagio_dev,tag_tagio_prod
     depends_on:
       - mongo
-
-volumes:
-  mongo_data:
